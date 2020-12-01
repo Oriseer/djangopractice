@@ -1,0 +1,15 @@
+{%  extends 'practiceapp/main.html' %}
+
+{% block content %}
+<form action="" method="POST">
+
+    {% csrf_token %}
+    {{ formset.management_form }}
+    {%for form in formset%}
+    {{form}}
+    <br>
+    {%endfor%}
+    <input type="submit" class="btn btn-sm btn-primary">
+</form>
+
+{% endblock %}

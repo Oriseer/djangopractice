@@ -1,0 +1,19 @@
+{%  extends 'practiceapp/main.html' %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="card card-body">
+             <p>Are you sure to delete {{item}}</p>
+        </div>
+    </div>
+</div>
+
+
+    <form method="POST">
+        {% csrf_token %}
+        <a class="btn btn-warning" href="{% url 'index' %}">Cancel</a>
+        <input type="submit" name="Confirm" class="btn btn-danger">
+    </form>
+{%endblock%}

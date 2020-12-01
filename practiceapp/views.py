@@ -1,12 +1,71 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import *
-from .forms import OrderForm
+from .forms import OrderForm, CreateUserForm, CustomerForm
 from .filters import OrderFilter
 from django.forms import inlineformset_factory
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from .decorators import unauthenticated
+from django.contrib.auth.models import Group
+from .decorators import admin_only
+
 
 # Create your views here.
+def user_page(request):
+    context = {
 
+    }
+    return render(request, 'practiceapp/userPage.html')
+
+
+def logout_page(request):
+    logout(request)
+    return redirect('login')
+
+
+@unauthenticated
+def login_page(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = authenticate(username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('/')
+        else:
+            messages.warning(request, 'Incorrect Uername or Password')
+    context = {
+
+    }
+    return render(request, 'practiceapp/login.html', context)
+
+
+@unauthenticated
+def register(request):
+    form = CreateUserForm()
+
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+
+            group = Group.objects.get('username')
+            user.groups.add(group)
+
+            username = form.cleaned_data.get('username')
+            messages.success(request, 'Account registered to: ' + username)
+            return redirect('login')
+    context = {
+        'form': form
+    }
+    return render(request, 'practiceapp/registration.html', context)
+
+
+@admin_only
 def index(request):
     orders = Order.objects.all()
     customers = Customer.objects.all()
@@ -22,6 +81,7 @@ def index(request):
     return render(request, 'practiceapp/dashboard.html', context)
 
 
+@login_required(login_url='login')
 def product(request):
 
     products = Product.objects.all()
@@ -31,6 +91,7 @@ def product(request):
     return render(request, 'practiceapp/product.html', context)
 
 
+@login_required(login_url='login')
 def customer(request, pk):
     customers = Customer.objects.get(id=pk)
     customer_orders = customers.order_set.all()
@@ -47,6 +108,7 @@ def customer(request, pk):
     return render(request, 'practiceapp/customer.html', context)
 
 
+@login_required(login_url='login')
 def create_order(request, pk):
     customer = Customer.objects.get(id=pk)
     OrderFormSet = inlineformset_factory(Customer, Order, fields=('product', 'status'))
@@ -55,13 +117,14 @@ def create_order(request, pk):
         formset = OrderFormSet(request.POST, instance=customer)
         if formset.is_valid():
             formset.save()
-            return redirect('')
+            return redirect('/')
     context = {
         'formset': formset
     }
     return render(request, 'practiceapp/createOrder.html', context)
 
 
+@login_required(login_url='login')
 def update_order(request, pk):
     order = Order.objects.get(id=pk)
     form = OrderForm(instance=order)
@@ -72,11 +135,12 @@ def update_order(request, pk):
             form.save()
             return redirect('/')
     context = {
-        'form': form
+        'formset': form
     }
     return render(request, 'practiceapp/createOrder.html', context)
 
 
+@login_required(login_url='login')
 def delete_order(request, pk):
     order = Order.objects.get(id=pk)
 
@@ -87,3 +151,32 @@ def delete_order(request, pk):
         'item': order
     }
     return render(request, 'practiceapp/deleteOrder.html', context)
+
+
+@login_required(login_url='login')
+def create_customer(request):
+    form = CustomerForm()
+    if request.method == 'POST':
+        form = CustomerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/')
+    context = {
+        'form': form
+    }
+    return render(request, 'practiceapp/createCustomer.html', context)
+
+
+@login_required(login_url='login')
+def update_customer(request, pk):
+    customer = Customer.objects.get(id=pk)
+    form = CustomerForm(instance=customer)
+    if request.method == 'POST':
+        form = CustomerForm(request.POST, instance=customer)
+        if form.is_valid():
+            form.save()
+            return      redirect('/')
+    context = {
+        'form': form
+    }
+    return render(request, 'practiceapp/createCustomer.html', context)

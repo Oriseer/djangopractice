@@ -7,17 +7,17 @@ from django.forms import inlineformset_factory
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .decorators import unauthenticated, allowed_users, admin_only
+from .decorators import unauthenticated
 from django.contrib.auth.models import Group
+from .decorators import admin_only
 
 
 # Create your views here.
-#@allowed_users(allowed_roles=['admin'])
-# def user_page(request):
-#     context = {
-#
-#     }
-#     return render(request, 'practiceapp/userPage.html')
+def user_page(request):
+    context = {
+
+    }
+    return render(request, 'practiceapp/userPage.html')
 
 
 def logout_page(request):
@@ -37,7 +37,7 @@ def login_page(request):
             login(request, user)
             return redirect('/')
         else:
-            messages.warning(request, 'Incorrect Username or Password')
+            messages.warning(request, 'Incorrect Uername or Password')
     context = {
 
     }
@@ -47,6 +47,7 @@ def login_page(request):
 @unauthenticated
 def register(request):
     form = CreateUserForm()
+
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
@@ -64,7 +65,7 @@ def register(request):
     return render(request, 'practiceapp/registration.html', context)
 
 
-@login_required(login_url='login')
+@admin_only
 def index(request):
     orders = Order.objects.all()
     customers = Customer.objects.all()

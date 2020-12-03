@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import *
-from .forms import OrderForm, CreateUserForm, CustomerForm
+from .forms import OrderForm, CreateUserForm, CustomerForm, UserProfileForm
 from .filters import OrderFilter
 from django.forms import inlineformset_factory
 from django.contrib.auth import authenticate, login, logout
@@ -13,11 +13,31 @@ from .decorators import admin_only
 
 
 # Create your views here.
-def user_page(request):
+def user_settings(request):
+    customer = request.user.customer
+    form = UserProfileForm(instance=customer)
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=customer)
+        if form.is_valid():
+            form.save()
     context = {
-
+        'form': form,
     }
-    return render(request, 'practiceapp/userPage.html')
+    return render(request, 'practiceapp/user_settings.html', context)
+
+
+def user_page(request):
+    customer_orders = request.user.customer.order_set.all()
+    total_orders = customer_orders.count()
+    delivered = customer_orders.filter(status='Delivered').count()
+    pending = customer_orders.filter(status='Pending').count()
+
+    context = {
+        'customer_orders': customer_orders,
+        'delivered': delivered, 'pending': pending,
+        'total_orders': total_orders,
+    }
+    return render(request, 'practiceapp/userPage.html', context)
 
 
 def logout_page(request):
@@ -53,11 +73,17 @@ def register(request):
         if form.is_valid():
             user = form.save()
 
-            group = Group.objects.get('username')
+            group = Group.objects.get(name='customer')
             user.groups.add(group)
 
+            Customer.objects.create(
+                user=user,
+                name=user.username,
+                email=user.email
+            )
+
             username = form.cleaned_data.get('username')
-            messages.success(request, 'Account registered to: ' + username)
+            messages.success(request, 'Account registered for %s', username)
             return redirect('login')
     context = {
         'form': form

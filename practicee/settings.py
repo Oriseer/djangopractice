@@ -124,5 +124,10 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'static'
+    BASE_DIR / 'practiceapp/static'
 ]
+STATIC_ROOT = BASE_DIR / 'assets'
+
+
+MEDIA_URL = '/images/'
+MEDIA_ROOT = BASE_DIR / 'media'

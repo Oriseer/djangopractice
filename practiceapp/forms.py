@@ -5,6 +5,13 @@ from django import forms
 from .models import Order, Customer
 
 
+class UserProfileForm(ModelForm):
+    class Meta:
+        model = Customer
+        fields = '__all__'
+        exclude = ['user']
+
+
 class OrderForm(ModelForm):
     class Meta:
         model = Order

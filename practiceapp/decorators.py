@@ -11,6 +11,7 @@ def unauthenticated(view):
 
     return wrapper
 
+
 def admin_only(view):
     def wrapper(request, *args, **kwargs):
         group = None
@@ -20,5 +21,7 @@ def admin_only(view):
             return redirect('user_page')
         if group == 'admin':
             return view(request, *args, **kwargs)
+        else:
+            return HttpResponse("You are not allowed to view this page")
 
     return wrapper

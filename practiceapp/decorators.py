@@ -22,6 +22,6 @@ def admin_only(view):
         if group == 'admin':
             return view(request, *args, **kwargs)
         else:
-            return HttpResponse("You are not allowed to view this page")
+            return redirect("login")
 
     return wrapper

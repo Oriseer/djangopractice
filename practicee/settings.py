@@ -22,9 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '^)=r-n5e1mk+1rfl8&4@3g-g7+!j$t(ak@z6ple_))x$)9tx20'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['akoapp.herokuapp.com/', '127.0.0.1/']
+ALLOWED_HOSTS = ['akoapp.herokuapp.com', '127.0.0.1']
 
 # Application definition
 

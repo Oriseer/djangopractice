@@ -1,1 +1,1 @@
-web: gunicorn practicee.wsgi --log-file e
+web: gunicorn practicee.wsgi --log-file -

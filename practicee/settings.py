@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '^)=r-n5e1mk+1rfl8&4@3g-g7+!j$t(ak@z6ple_))x$)9tx20'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -72,7 +72,7 @@ WSGI_APPLICATION = 'practicee.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-"""
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -82,6 +82,7 @@ DATABASES = {
         'HOST': 'localhost',
     }
 }
+
 """
 DATABASES = {
     'default': {
@@ -89,6 +90,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3'
     }
 }
+"""
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
